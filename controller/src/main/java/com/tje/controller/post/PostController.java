@@ -1,33 +1,113 @@
 package com.tje.controller.post;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // GET /posts
 // 게시글 목록이 JSON으로 나오게
 @RestController
 @RequestMapping(value = "/posts")
 public class PostController {
-    List<Post> list = new ArrayList<>();
+    //동시성을 위한 자료 구조
+    //HashMap -> ConcurrentHashMap
+    //Integer -> AtomicInteger
+    Map<Integer, Post> map = new ConcurrentHashMap<>();
+    AtomicInteger num = new AtomicInteger(0);
+
+    //box로 만들기..
+    /*creatorName: 서버에서 아무나 넣고
+            게시자
+            ----
+            제목(h3)
+            본문(p)
+            ----
+            생성시간
+    */
+
+
 
     @GetMapping
     public List<Post> getPostList() {
-        list.clear();
+        // 증가시키고 값 가져오기
+//        int no = num.incrementAndGet();
+//        map.clear();
 
-        list.add(new Post(0001, "JAVA", 1234, "김철수", new Date().getTime()));
-        list.add(Post.builder()
-                .title("Spring-Boot")
-                .no(0002)
-                .creatorName("Mary")
-                .content(5678)
-                .createdTime(new Date().getTime())
-                .build());
+//        map.put(no, new Post(0001, "JAVA", "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto perspiciatis assumenda at ex aliquid nemo cupiditate dignissimos repellendus iste. Sunt magnam voluptatum nisi itaque ipsam est iure aspernatur tempora magni!", "John", new Date().getTime()));
+//        no = num.incrementAndGet();
+//        map.put(no, Post.builder()
+//                .title("Spring-Boot")
+//                .no(no)
+//                .creatorName("Mary")
+//                .title("Lorem, ipsum dolor.")
+//                .content("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto perspiciatis assumenda at ex aliquid nemo cupiditate dignissimos repellendus iste. Sunt magnam voluptatum nisi itaque ipsam est iure aspernatur tempora magni!")
+//                .createdTime(new Date().getTime())
+//                .build());
+//        no = num.incrementAndGet();
+//        map.put(no, Post.builder()
+//                .creatorName("Lily")
+//                .no(no)
+//                .title("Spring")
+//                .createdTime(new Date().getTime())
+//                .content("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto perspiciatis assumenda at ex aliquid nemo cupiditate dignissimos repellendus iste. Sunt magnam voluptatum nisi itaque ipsam est iure aspernatur tempora magni!")
+//                .build());
+
+        var list = new ArrayList<>(map.values());
+        //람다식(lambda expression)
+        //식이 1개인 함수식:
+        //매개변수 영역과 함수 본체를 화살표로 구분함
+        //함수 본체의 수식 값이 반환값
+        list.sort((a, b) -> b.getNo() - a.getNo());
 
         return list;
     }
+
+    //title, content 필수 속성
+    //creatorName: 서버에서 가짜이름 넣음.
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> addPost(@RequestBody Post post) {
+
+        //1. 입력값 검증(title, content)
+        // -> 입력값 오류(빈 값)가 있으면 400 에러 띄움
+        //제목과 컨텐트 내용이 비어있으면 내보내는 400번 코드
+        if(post.getTitle() == null || post.getContent().isEmpty()){
+            Map<String, Object> res = new HashMap<>();
+            res.put("data", null);
+            res.put("message", "[title] and [content] is Required Field");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+        }
+        //2. 채번: 번호를 딴다(1...2, 3...)
+        int no = num.incrementAndGet();
+        post.setNo(no);
+
+        //3. 시간값, 게시자 이름 설정(set필드명(..))
+
+        post.setCreatorName("Dodo");
+        post.setCreatedTime(new Date().getTime());
+
+        //4.맵에 추가(서버에서 생성된 값을 설정
+
+        map.put(no, post);
+        System.out.println(post);
+        //5. 생성된 객체를 맵에서 찾아서 반환
+        //객체 추가
+
+
+        //응답 객체 생성
+        Map<String, Object> res = new HashMap<>();
+        res.put("data", map.get(post.getNo()));
+        res.put("message", "created");
+
+        System.out.println(ResponseEntity.status(HttpStatus.CREATED).body(res));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
+
+
+
+    }
+
 }
