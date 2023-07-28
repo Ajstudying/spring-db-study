@@ -26,6 +26,7 @@ public class Post {
     private String creatorName;
     //생성시간(unix epoch time)
     private long createdTime;
+    private String image;
 
     public Map<String, Object> validate() {
         Map<String, Object> res = new HashMap<>();

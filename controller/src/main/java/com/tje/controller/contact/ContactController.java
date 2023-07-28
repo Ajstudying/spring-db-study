@@ -19,10 +19,10 @@ public class ContactController {
     @GetMapping
     public List<Contact> getContactList() {
 
-        map.put("hong@gmail.com",Contact.builder()
-                .name("홍길동").phone("010-1234-5678").email("hong@gmail.com").build());
-        map.put("kim@naver.com",Contact.builder()
-                .phone("010-9876-5432").name("김철수").email("kim@naver.com").build());
+//        map.put("hong@gmail.com",Contact.builder()
+//                .name("홍길동").phone("010-1234-5678").email("hong@gmail.com").build());
+//        map.put("kim@naver.com",Contact.builder()
+//                .phone("010-9876-5432").name("김철수").email("kim@naver.com").build());
 
         var list = new ArrayList<>(map.values());
 //        list.sort((a, b) -> b.getId() - a.getId();
@@ -109,6 +109,29 @@ public class ContactController {
         //HTTP Status Code: 201 Created
         // 리소스가 정상적으로 생성되었음.
         return  ResponseEntity.status(HttpStatus.CREATED).body(res);
+    }
+
+    /* DELETE /contacts/{email}
+	        :Path(경로)Variable(변수)
+	   DELETE /contacts/kdkcom@naver.com
+	*/
+
+    @DeleteMapping(value = "/{email}")
+    //@PathVariable("email")
+    //경로 문자열{email}과 변수명 String email이 동일하면 안 써도 된다.
+    public ResponseEntity removeContact(@PathVariable String email) {
+        System.out.println(email);
+
+        // 해당 키(key)의 데이터가 없으면
+        if(map.get(email) == null) {
+            //404: NOT FOUND, 해당 경로에 리소스가 없다
+            //  DELETE /contacts/kdk@naver.com
+            // Response Status Code : 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        //객체(리소스) 삭제
+        map.remove(email);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

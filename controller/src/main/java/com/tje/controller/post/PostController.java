@@ -92,7 +92,7 @@ public class PostController {
         //4.맵에 추가(서버에서 생성된 값을 설정
 
         map.put(no, post);
-        System.out.println(post);
+//        System.out.println(post);
         //5. 생성된 객체를 맵에서 찾아서 반환
         //객체 추가
 
@@ -104,6 +104,17 @@ public class PostController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res); //메세지 보냄!
 //        return ResponseEntity.status(HttpStatus.CREATED).build(); // 이렇게하면 그냥 생성되고 끝!
+    }
+
+    @DeleteMapping(value = "/{no}")
+    public ResponseEntity removePost(@PathVariable long no) {
+        System.out.println(no);
+        if(map.get(no) == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        map.remove(no);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }
