@@ -42,6 +42,7 @@ public class Post {
     @Column(length = 1024 * 1024 * 20)
     private String image;
 
+    //validate(입증하다.)
     public Map<String, Object> validate() {
         Map<String, Object> res = new HashMap<>();
         res.put("status", null);

@@ -3,14 +3,13 @@ package com.kaj.myapp.post;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+
 
 
 @RestController
@@ -25,7 +24,10 @@ public class PostController {
     @GetMapping
     public List<Post> getPostList() {
 
-        List<Post> list = repo.findAll(Sort.by("no").ascending());
+        //JPA 사용
+//        List<Post> list = repo.findAll(Sort.by("no").ascending());
+        //Query 사용
+        List<Post> list = repo.findPostSortByNo();
 
         return list;
     }
@@ -54,15 +56,15 @@ public class PostController {
         post.setCreatorName("Dodo");
         post.setCreatedTime(new Date().getTime());
 
-        repo.save(post);
-        System.out.println(repo);
+        //생성된 객체를 반환
+        Post savedPost = repo.save(post);
 
 
-        Optional<Post> savedPost = repo.findById((post.getNo()));
-        //레코드가 존재하는지 여부
-        if(savedPost.isPresent()){
+
+        //생성된 객체가 존재하면 null값이 아닐 때
+        if(savedPost != null){
             Map<String, Object> res = new HashMap<>();
-            res.put("data", repo.findById((post.getNo())));
+            res.put("data", savedPost);
             res.put("message", "created");
 
             return ResponseEntity.status(HttpStatus.CREATED).body(res);
@@ -81,6 +83,34 @@ public class PostController {
 
         repo.deleteById(no);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping(value = "/{no}")
+    public  ResponseEntity modifyPost(@PathVariable long no, @RequestBody PostModifyRequest post){
+        System.out.println(no);
+        System.out.println(post);
+
+        // 1. 키값으로 조회해옴
+        Optional<Post> findedPost =  repo.findById(no);
+        // 2. 해당 레코드가 있는지 확인
+        if(!findedPost.isPresent()){
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        //수정해서 저장할 포스트
+        Post toModifyPost = findedPost.get();
+
+        if(post.getTitle() != null && !post.getTitle().isEmpty()){
+            toModifyPost.setTitle(post.getTitle());
+        }
+        if(post.getContent() != null && !post.getContent().isEmpty()){
+            toModifyPost.setContent(post.getContent());
+        }
+        //update
+        repo.save(toModifyPost);
+
+        //ok 처리
+        return ResponseEntity.ok().build();
     }
 
 }
