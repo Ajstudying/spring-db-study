@@ -1,6 +1,9 @@
 package com.kaj.myapp.contact;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -92,6 +95,70 @@ public class B{
         return list;
     }
 
+    //GET /contacts/paging?page=0&size=10
+    //query-string으로 받을 것임
+    //?키=값&키=값....
+    //@RequestParam
+    //query-string 값을 매개변수로 받는 어노테이션
+    @GetMapping(value = "/paging")
+    public Page<Contact> getContactsPaging(@RequestParam int page, @RequestParam int size) {
+
+        System.out.println(page);
+        System.out.println(size);
+
+        //기본적으로 key 정렬(default)
+        //정렬 설정없이 간다.
+        // SQL: ORDER BY email DESC
+        //정렬 매개변수 객체
+        Sort sort = Sort.by("email").descending();
+        System.out.println(sort);
+        //페이지 매개변수 객체
+        //SQL: OFFSET page * size LIMIT size
+        // OFFSET: 어떤 기준점에 대한 거리
+        // OFFSET 10: 1번째~10번까지 이후를 말함.
+        //LIMT 10: 10건의 레코드
+        // LIMIT 10 OFFSET 10 : 앞에서 10번을 건너뛰고, 다음 10건을 조회한다는 뜻
+        // 영어 어순이라 의미와 반대 순서임.
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+//        PageRequest pageRequest = PageRequest.of(page, size); // sort가 없어도 됨.
+        return repo.findAll(pageRequest);
+
+    }
+
+    //GET /contacts/paging/searchByName?page=0&size=10&name=hong
+    @GetMapping(value = "/paging/searchByName")
+    public Page<Contact> getContactsPagingSearchName
+            (@RequestParam int page, @RequestParam int size, @RequestParam String name) {
+
+        System.out.println(page);
+        System.out.println(size);
+        System.out.println(name);
+
+        //정렬 매개변수 객체
+        Sort sort = Sort.by("email").descending();
+        //페이지 매개변수 객체
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return repo.findByNameContaining(name, pageRequest);
+
+    }
+
+    @GetMapping(value = "/paging/search")
+    public Page<Contact> getContactsPagingSearch
+            (@RequestParam int page, @RequestParam int size, @RequestParam String query) {
+
+        System.out.println(page);
+        System.out.println(size);
+        System.out.println(query);
+
+        //정렬 매개변수 객체
+        Sort sort = Sort.by("email").descending();
+        //페이지 매개변수 객체
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return repo.findByNameContainsOrPhoneContains(query, query, pageRequest);
+
+    }
     // HTTP 1.1 POST /contacts
     @PostMapping
     public ResponseEntity<Map<String, Object>> addContact(@RequestBody Contact contact) {

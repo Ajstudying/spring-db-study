@@ -4,6 +4,9 @@ package com.kaj.myapp.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +33,38 @@ public class PostController {
         List<Post> list = repo.findPostSortByNo();
 
         return list;
+    }
+
+    @GetMapping(value = "/paging")
+    public Page<Post> getPostsPaging(@RequestParam int page, @RequestParam int size){
+        System.out.println(page + "1");
+        System.out.println(size + "1");
+
+        Sort sort = Sort.by("no").descending();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return repo.findAll(pageRequest);
+    }
+    @GetMapping(value = "/paging/searchByCreator")
+    public Page<Post> getPostsPagingSearchCreator
+            (@RequestParam int page, @RequestParam int size, @RequestParam String creator){
+        System.out.println(page + "2");
+        System.out.println(size + "2");
+        System.out.println(creator + "2");
+
+        Sort sort = Sort.by("no").descending();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return  repo.findByCreatorNameContains(creator, pageRequest);
+    }
+    @GetMapping(value = "/paging/search")
+    public Page<Post> getPostsPagingSearch
+            (@RequestParam int page, @RequestParam int size, @RequestParam String query){
+        System.out.println(page + "3");
+        System.out.println(size + "3");
+        System.out.println(query + "3");
+
+        Sort sort = Sort.by("no").descending();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return repo.findByCreatorNameContainsOrContentContains(query, query, pageRequest);
     }
 
     //title, content 필수 속성
