@@ -18,9 +18,9 @@ use myapp;
 )
 */
 /*
- DDL(data defination language)
+ DDL(data definition language) 데이터 정의 언어
  create ...
- SQL(Structured Query Language): 시퀄
+ SQL(Structured Query Language): 시퀄 구조화 조회 언어
  SEQUEL(... english)
 */
 create table contact (
@@ -47,6 +47,7 @@ value("John doe", "010-0987-6543", "john@naver.com", null);
 Error Code: 1062. Duplicate entry 'john@naver.com' for key 'contact.PRIMARY'	0.000 sec
 */
 /*
+주된/기본적인/주요한 키
 Primary Key: 제약조건:
 1. 테이블 내의 데이터 중에서 같은 값이 중복이 있으면 안됨.
 2. null 값이 될 수 없음.
@@ -59,8 +60,8 @@ select * from contact;
 select * from contact order by name;
 
 -- 데이터베이스의 PK(index, clustered)
--- clustered index에 맞게 데이터가 정렬 되어 있음.
--- index(binaray tree)구조이고, 데이터(linked list) 구조이다.
+-- clustered(다발) index에 맞게 데이터가 정렬 되어 있음.
+-- index(binary tree) 이진법 트리구조이고, 데이터(linked list) 구조이다.
 -- index(목차) 트리를 탐색하여 데이터까지 찾아감.
 -- PK 값으로 1건만 찾아옴.
 -- where 조건식
@@ -89,7 +90,14 @@ no bigint not null auto_increment, content varchar(255), created_time bigint not
 
 insert into post (creator_name, created_time, title, content, image) value("Lala", 2, "lorem", "content lorem....","");
 insert into post (creator_name, created_time, title, content, image) value("marine", 3, "lorem", "content lorem....","");
+
+
+
+
+
 select * from post;
+
+select * from post order by no;
 
 delete from post where no='2';
 
