@@ -1,4 +1,4 @@
-package com.kaj.myapp.auth;
+package com.kaj.myapp.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.kaj.myapp.auth;
+package com.kaj.myapp.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class Login {
     @Column(unique = true)
     private String username;
     @Column(length = 500)
-    private String password;
+    private String secret;
 
 //    @OneToOne
 //    @JoinColumn(name = "profile_id")

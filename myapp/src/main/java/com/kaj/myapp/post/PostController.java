@@ -2,6 +2,7 @@ package com.kaj.myapp.post;
 
 
 
+import com.kaj.myapp.auth.entity.LoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +22,8 @@ public class PostController {
 
     @Autowired
     PostRepository repo;
+    @Autowired
+    LoginRepository logRepo;
 
 
 
@@ -44,17 +47,17 @@ public class PostController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         return repo.findAll(pageRequest);
     }
-    @GetMapping(value = "/paging/searchByCreator")
-    public Page<Post> getPostsPagingSearchCreator
-            (@RequestParam int page, @RequestParam int size, @RequestParam String creator){
-        System.out.println(page + "2");
-        System.out.println(size + "2");
-        System.out.println(creator + "2");
-
-        Sort sort = Sort.by("no").descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
-        return  repo.findByCreatorNameContains(creator, pageRequest);
-    }
+//    @GetMapping(value = "/paging/search")
+//    public Page<Post> getPostsPagingCreator
+//            (@RequestParam int page, @RequestParam int size, @RequestParam String query){
+//        System.out.println(page + "2");
+//        System.out.println(size + "2");
+//        System.out.println(query + "2");
+//
+//        Sort sort = Sort.by("no").descending();
+//        PageRequest pageRequest = PageRequest.of(page, size, sort);
+//        return  repo.findByCreatorNameContains(query, pageRequest);
+//    }
     @GetMapping(value = "/paging/search")
     public Page<Post> getPostsPagingSearch
             (@RequestParam int page, @RequestParam int size, @RequestParam String query){

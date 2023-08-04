@@ -1,4 +1,4 @@
-package com.kaj.myapp.auth;
+package com.kaj.myapp.auth.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
