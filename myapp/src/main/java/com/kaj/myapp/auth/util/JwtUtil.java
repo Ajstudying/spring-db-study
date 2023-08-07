@@ -1,7 +1,12 @@
 package com.kaj.myapp.auth.util;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.kaj.myapp.auth.AuthProfile;
+import com.kaj.myapp.auth.entity.Profile;
 import lombok.Data;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,4 +41,27 @@ public class JwtUtil {
                 .sign(algorithm);
 
     }
+
+    public AuthProfile validateToken(String token){
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        // 검증 객체 생성
+        JWTVerifier verifier = JWT.require(algorithm).build();
+
+        try {
+            DecodedJWT decodedJWT = verifier.verify(token);
+            //토큰 검증이 제대로 된 상황
+            //토큰 페이로드(데이터, subject/claim)을 조회
+            Long id = Long.valueOf(decodedJWT.getSubject());
+            String nickname = decodedJWT.getClaim("nickname").asString();
+            String username = decodedJWT.getClaim("username").asString();
+
+            return AuthProfile.builder().id(id).username(username).nickname(nickname).build();
+        } catch (JWTVerificationException e){
+            //토큰 검증 오류 상황
+            return null;
+        }
+
+
+    }
+
 }

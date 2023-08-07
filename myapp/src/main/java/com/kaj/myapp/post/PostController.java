@@ -2,11 +2,14 @@ package com.kaj.myapp.post;
 
 
 
+import com.kaj.myapp.auth.Auth;
+import com.kaj.myapp.auth.AuthProfile;
 import com.kaj.myapp.auth.entity.LoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,13 +74,14 @@ public class PostController {
     }
 
     //title, content 필수 속성
-    //creatorName: 서버에서 가짜이름 넣음.
+    @Auth
     @PostMapping
-    public ResponseEntity<Map<String, Object>> addPost(@RequestBody Post post) {
+    public ResponseEntity<Map<String, Object>> addPost(@RequestBody Post post, @RequestAttribute AuthProfile authProfile) {
 
         //1. 입력값 검증(title, content)
         // -> 입력값 오류(빈 값)가 있으면 400 에러 띄움
         //제목과 컨텐트 내용이 비어있으면 내보내는 400번 코드
+        System.out.println(authProfile);
 
         if(post.getTitle() == null || post.getContent() == null || post.getTitle().isEmpty() || post.getContent().isEmpty()){
 //            Map<String, Object> result = ;
@@ -91,9 +95,10 @@ public class PostController {
 
         //3. 시간값, 게시자 이름 설정(set필드명(..))
 
-        post.setCreatorName("Dodo");
+        post.setCreatorName(authProfile.getNickname());
         post.setCreatedTime(new Date().getTime());
 
+        post.setCreatorId(authProfile.getId());
         //생성된 객체를 반환
         Post savedPost = repo.save(post);
 
@@ -112,24 +117,33 @@ public class PostController {
         return ResponseEntity.ok().build(); // 이렇게하면 그냥 생성되고 끝!
     }
 
+    @Auth
     @DeleteMapping(value = "/{no}")
-    public ResponseEntity removePost(@PathVariable long no) {
+    public ResponseEntity removePost(@PathVariable long no, @RequestAttribute AuthProfile authProfile) {
         System.out.println(no);
-        if(!(repo.findById(no).isPresent())) {
+
+        Optional<Post> post = repo.findPostByNo(no);
+
+
+        if(!post.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        if(post.get().getNo() != no){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         repo.deleteById(no);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @Auth
     @PutMapping(value = "/{no}")
-    public  ResponseEntity modifyPost(@PathVariable long no, @RequestBody PostModifyRequest post){
+    public  ResponseEntity modifyPost(@PathVariable long no, @RequestBody PostModifyRequest post, @RequestAttribute AuthProfile authProfile){
         System.out.println(no);
         System.out.println(post);
 
         // 1. 키값으로 조회해옴
-        Optional<Post> findedPost =  repo.findById(no);
+        Optional<Post> findedPost =  repo.findById(authProfile.getId());
         // 2. 해당 레코드가 있는지 확인
         if(!findedPost.isPresent()){
 

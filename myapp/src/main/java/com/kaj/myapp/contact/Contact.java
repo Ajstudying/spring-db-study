@@ -1,8 +1,6 @@
 package com.kaj.myapp.contact;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor //전체 필드 초기 생성자
 @NoArgsConstructor // 빈 생성자
 @Entity
+@IdClass(ContactId.class) // PK 클래스
 // @Entity는 기본적으로 클래스명(파스칼케이스) -> 테이블명 (스네이크케이스) 맵핑
 // class: ContactActivity -> table: contact_activity
 
@@ -32,9 +31,16 @@ public class Contact {
     // PK: 유일성+대표성이 만족이 되어야 함.
 
     //PK 칼럼 및 제약조건 설정
-    @Id
+
+    //ownerId + email : 두개를 합쳐서 연락처 PK로 만들 생각
     //key
+    @Id
+    //연락처 소유자 id(프로필 id)
+    private long ownerId;
+    //key
+    @Id
     private String email; //계정 Id, 인터넷 세계의 집주소(불변)
+
 
     //제약 조건, NOT, NULL
     @Column(nullable = false)
@@ -50,6 +56,7 @@ public class Contact {
     @Column(length = 1024 * 1024 * 20)
     //파일을 base64 data-url 문자열로 저장
     private String image;
+
 
 
 //    @Override

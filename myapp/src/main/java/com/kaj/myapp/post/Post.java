@@ -31,7 +31,11 @@ public class Post {
     private String content;
     //게시자 (not nullable)
 //    @Column(nullable = false)
+    // 게시글을 작성 사용자의 nickname
     private String creatorName;
+    // 게시글을 작성한 사용자의 Id
+    private long creatorId;
+
     //생성시간(unix epoch time)
 
     //created_time bigint not null,
@@ -41,6 +45,7 @@ public class Post {
     //데이터 베이스에 null을 넣고 싶으면 Class 타입을 써야함. ex) 위의 값은 Long타입으로 쓴다.
     @Column(length = 1024 * 1024 * 20)
     private String image;
+
 
     //validate(입증하다.)
     public Map<String, Object> validate() {

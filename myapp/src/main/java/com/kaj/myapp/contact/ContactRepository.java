@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-// JpaRepository<Contact, String>
+// JpaRepository<Contact, ContactId>
 // <엔티티클래스, 엔티티의키타입>
-public interface ContactRepository extends JpaRepository<Contact, String> {
+public interface ContactRepository extends JpaRepository<Contact, ContactId> {
     // JPA Native query 사용
     // ANSI SQL이 사용가능할 때만 사용하는게 좋다
     // INSERT, UPDATE, DELETE는 JPA의 기본 메서드를 사용한다.
@@ -68,6 +68,11 @@ public interface ContactRepository extends JpaRepository<Contact, String> {
     Page<Contact> findByNameContaining(String name, Pageable page);
 
     Page<Contact> findByNameContainsOrPhoneContains(String name, String phone, Pageable pageable);
+
+    // select * from where owner_id = :ownerId
+    //select count(*) from contact where owner_id = :ownerId
+    Page<Contact> findByOwnerId(long ownerId, Pageable pageable);
+
 
 
 

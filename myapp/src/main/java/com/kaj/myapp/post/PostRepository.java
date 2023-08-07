@@ -19,6 +19,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByCreatorNameContains(String creatorName, Pageable pageable);
 
+    Page<Post> findByNo(long no, Pageable pageable);
+
+
+    Page<Post> findByCreatorId(long creatorId, Pageable pageable);
+
+
+
     Page<Post> findByCreatorNameContainsOrContentContains(String creatorName, String content, Pageable pageable);
 
 
