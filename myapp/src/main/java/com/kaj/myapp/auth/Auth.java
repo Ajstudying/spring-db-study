@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 public @interface Auth {
     //역할(일반 사용자, 골드 사용자, 관리자, 판매 관리자)..
     //@Auth(role="GOLD")
-//    public boolean role();
+//    public booleanH role();
     public boolean require() default true;
 }
 

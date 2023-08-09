@@ -46,14 +46,19 @@ public class Post {
     @Column(length = 1024 * 1024 * 20)
     private String image;
 
+    // 댓글 수
+    private long commentCnt;
+    // 최근 댓글 내용
+    private String latestComment;
+
 
     //validate(입증하다.)
-    public Map<String, Object> validate() {
-        Map<String, Object> res = new HashMap<>();
-        res.put("status", null);
-        res.put("status", HttpStatus.BAD_REQUEST);
-        return res;
-    }
+//    public Map<String, Object> validate() {
+//        Map<String, Object> res = new HashMap<>();
+//        res.put("status", null);
+//        res.put("status", HttpStatus.BAD_REQUEST);
+//        return res;
+//    }
 
 }
 

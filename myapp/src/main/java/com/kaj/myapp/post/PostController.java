@@ -85,7 +85,7 @@ public class PostController {
 
         if(post.getTitle() == null || post.getContent() == null || post.getTitle().isEmpty() || post.getContent().isEmpty()){
 //            Map<String, Object> result = ;
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(post.validate());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         //2. 채번: 번호를 딴다(1...2, 3...)
         //데이터베이스의 auto_increment를 사용할 것이므로
