@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +73,22 @@ public interface ContactRepository extends JpaRepository<Contact, ContactId> {
     // select * from where owner_id = :ownerId
     //select count(*) from contact where owner_id = :ownerId
     Page<Contact> findByOwnerId(long ownerId, Pageable pageable);
+
+    Page<Contact> findByOwnerIdOrNameContainsOrPhoneContains(long ownerId, String name, String phone, Pageable pageable);
+
+    Page<Contact> findByOwnerIdAndNameContainsOrPhoneContains(long ownerId, String name, String phone, Pageable pageable);
+
+    Page<Contact> findByOwnerIdAndNameContainsOrOwnerIdAndPhoneContains(long ownerId, String name, long ownerId1, String phone, Pageable pageable);
+
+    Page<Contact> findByOwnerIdAndPhoneContains(long ownerId, String phone, Pageable pageable);
+
+    Page<Contact> findByOwnerIdAndNameContains(long ownerId, String name, Pageable pageable);
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-package com.kaj.mypet.entity;
+package com.kaj.mypet.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,23 +6,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
+@Entity
 @AllArgsConstructor
 @Builder
-@Entity
-public class User {
+public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(unique = true)
-    private String userid;
-    @Column(length = 500)
-    private String secret;
+    private String petname;
+    private String species;
     private String nickname;
-    @OneToMany(mappedBy = "user")
-    private List<Profile> profile;
+
+    @ManyToOne
+    @JoinColumn(name="user_nickname")
+    private User user;
+
+    public String getUserNickname() {
+        return user.getNickname();
+    }
+
 }

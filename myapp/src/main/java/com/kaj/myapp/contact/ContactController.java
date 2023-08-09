@@ -149,20 +149,22 @@ public class B{
 
     }
 
+    @Auth
     @GetMapping(value = "/paging/search")
     public Page<Contact> getContactsPagingSearch
-            (@RequestParam int page, @RequestParam int size, @RequestParam String query) {
+            (@RequestParam int page, @RequestParam int size, @RequestParam String query, @RequestAttribute AuthProfile authProfile) {
 
         System.out.println(page);
         System.out.println(size);
-        System.out.println(query);
+        System.out.println(query+2);
 
         //정렬 매개변수 객체
         Sort sort = Sort.by("email").descending();
         //페이지 매개변수 객체
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
-        return repo.findByNameContainsOrPhoneContains(query, query, pageRequest);
+//        return repo.findByOwnerIdAndNameContainsOrPhoneContains(authProfile.getId(), query, query, pageRequest);
+        return repo.findByOwnerIdAndNameContainsOrOwnerIdAndPhoneContains(authProfile.getId(), query, authProfile.getId(), query, pageRequest);
 
     }
     // HTTP 1.1 POST /contacts
