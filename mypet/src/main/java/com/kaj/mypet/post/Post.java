@@ -1,9 +1,6 @@
 package com.kaj.mypet.post;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,10 +13,14 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long no;
 
-    private String nickname;
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String content;
+    private String nickname;
     private String image;
+    @Column(length = 1024 * 1024 * 20)
     private long createdTime;
+    private String petname;
 
 }

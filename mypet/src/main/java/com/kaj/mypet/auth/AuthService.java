@@ -9,6 +9,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class AuthService {
 
@@ -34,13 +37,18 @@ public class AuthService {
 
         User saveUser = userRepo.save(toSaveUser);
 
-        Profile toSaveProfile = Profile.builder()
-                .nickname(req.getNickname())
-                .petname(req.getPetname())
-                .species(req.getSpecies())
-                .user(saveUser)
-                .build();
-        profileRepo.save(toSaveProfile);
+        List<Profile> lists = req.getProfilelist();
+        for(int i = 0; i < lists.size(); i++) {
+           Profile toSaveProfile = Profile.builder()
+                    .petname(lists.get(i).getPetname())
+                    .species(lists.get(i).getSpecies())
+                    .user(saveUser)
+                    .build();
+            profileRepo.save(toSaveProfile);
+
+        }
+
+
 
     }
 

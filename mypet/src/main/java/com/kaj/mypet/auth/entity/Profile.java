@@ -18,14 +18,13 @@ public class Profile {
     private long id;
     private String petname;
     private String species;
-    private String nickname;
 
     @ManyToOne
-    @JoinColumn(name="user_nickname")
+    @JoinColumn(name="user_id")
     private User user;
 
-    public String getUserNickname() {
-        return user.getNickname();
-    }
+//    public String getUserNickname() {
+//        return user.getNickname();
+//    }
 
 }

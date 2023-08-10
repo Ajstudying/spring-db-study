@@ -10,6 +10,8 @@ import com.kaj.mypet.auth.entity.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 public class JwtUtil {
     //임의의 서명 값
@@ -36,24 +38,26 @@ public class JwtUtil {
                 .sign(algorithm);
     }
 
-    public Profile validateToken(String token){
+    public User validateToken(String token){
+        System.out.println(token);
         //검증 객체
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm).build();
 
         try{
             DecodedJWT decodedJWT = verifier.verify(token);
-            Long userId = Long.valueOf(decodedJWT.getSubject());
+            String userId = decodedJWT.getClaim("userId").asString();
             String nickname = decodedJWT.getClaim("nickname").asString();
-            return Profile.builder().id(userId).nickname(nickname).build();
-//            //User객체를 가져옴
-//            User user = useRepo.findById(userId).orElse(null);
-//            if(user != null){
-//                Profile profile = Profile.builder()
-//                        .user(user)
-//                        .build();
-//                return profile;
-//            }else {return null;}
+            User user = User.builder().userid(userId).nickname(nickname).build();
+            System.out.println(user);
+            return user;
+//            Optional<User> profileUser = useRepo.findByUserid(userId);
+//            System.out.println(profileUser);
+//            if(!(profileUser.isEmpty()) && user.getProfile() == profileUser.get().getProfile()){
+//                return user;
+//            }
+//            return null;
+
         }catch (JWTVerificationException e){
             //토큰 검증 오류 상황
             return null;
