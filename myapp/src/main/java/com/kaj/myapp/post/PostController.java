@@ -5,11 +5,13 @@ package com.kaj.myapp.post;
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthProfile;
 import com.kaj.myapp.auth.entity.LoginRepository;
+import com.kaj.myapp.post.entity.Post;
+import com.kaj.myapp.post.repository.PostRepository;
+import com.kaj.myapp.post.request.PostModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -129,9 +131,9 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if(post.get().getNo() != no){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+//        if(post.get().getNo() != no){
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
         repo.deleteById(no);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

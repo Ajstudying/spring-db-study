@@ -62,6 +62,7 @@ truncate table login;
 -- 외래키 체크 True
 set FOREIGN_KEY_CHECKS = 1;
 
+truncate table profile;
 
 
 select * from login;

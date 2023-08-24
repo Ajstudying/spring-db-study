@@ -66,7 +66,7 @@ select * from contact order by name;
 -- PK 값으로 1건만 찾아옴.
 -- where 조건식
 -- where 컬럼명 = '컬럼값'
-select * from contact where email = 'hong@gmail.com';
+select * from contact where eboardboardboardboardcontactmail = 'hong@gmail.com';
 select * from contact;
 
 -- 조건에 맞는 레코드 삭제
