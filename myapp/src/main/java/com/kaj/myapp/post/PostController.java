@@ -6,6 +6,8 @@ import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthProfile;
 import com.kaj.myapp.auth.entity.LoginRepository;
 import com.kaj.myapp.post.entity.Post;
+import com.kaj.myapp.post.entity.PostComment;
+import com.kaj.myapp.post.repository.PostCommentRepository;
 import com.kaj.myapp.post.repository.PostRepository;
 import com.kaj.myapp.post.request.PostModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,10 @@ public class PostController {
     PostRepository repo;
     @Autowired
     LoginRepository logRepo;
+    @Autowired
+    PostCommentRepository commentRepo;
+    @Autowired
+    PostService service;
 
 
 
@@ -165,6 +171,36 @@ public class PostController {
 
         //ok 처리
         return ResponseEntity.ok().build();
+    }
+
+    // 하위객체(테이블) 추가하기
+    // POST /posts/{no}/comments
+    @Auth
+    @PostMapping("/{no}/comments")
+    public ResponseEntity addComments(
+            @PathVariable long no,
+            @RequestBody PostComment postComment,
+            @RequestAttribute AuthProfile authProfile) {
+
+        Optional<Post> post = repo.findById(no);
+        if(!post.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        // 커멘트 추가
+        postComment.setPost(post.get());
+        postComment.setOwnerId(authProfile.getId());
+        postComment.setOwnerName(authProfile.getNickname());
+
+        // 커멘트 건수 증가 및 최근 커멘트 표시
+        Post findedPost = post.get();
+        findedPost.setLatestComment(postComment.getContent());
+        findedPost.setCommentCnt(post.get().getCommentCnt() + 1);
+
+        // 트랜잭션 처리
+        service.createComment(findedPost, postComment);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
