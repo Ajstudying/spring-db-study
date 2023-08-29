@@ -122,21 +122,35 @@ public class AuthController {
         //   1.1 username으로 login 테이블에서 조회 후 id, secret까지 조회.
         Optional<Login> login = repo.findByUsername(username);
         if(!login.isPresent()){
-            //401 Unauthorized
-            //클라이언트에서는 대충 뭉뚱그려서 [인증정보가 잘못되었습니다.]
-            //[사용자이름 또는 패스워드가 잘못되었습니다.] X
-            // 아이디가 잘못되었다, 패스워드가 잘못되었다, 둘다 잘못되었다.
-            // 이런식으로 자세하게 response하면 안됨. 유추하기 쉽기 때문에 빌드로 내보냄.
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(ServletUriComponentsBuilder
+                            .fromHttpUrl("http://localhost:5500/login.html?err=Unauthorized")
+                            .build().toUri())
+                    .build();
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        //401 Unauthorized
+        //클라이언트에서는 대충 뭉뚱그려서 [인증정보가 잘못되었습니다.]
+        //[사용자이름 또는 패스워드가 잘못되었습니다.] X
+        // 아이디가 잘못되었다, 패스워드가 잘못되었다, 둘다 잘못되었다.
+        // 이런식으로 자세하게 response하면 안됨. 유추하기 쉽기 때문에 빌드로 내보냄.
 
         //   1.2 password+salt -> 해시 -> secret 일치 여부 확인
-        boolean isVerified = hash.verifyHash(password, login.get().getSecret());
-//        System.out.println("verified: "+isVerified);
         //   1.3 일치하면 다음 코드를 실행
         //   1.4 일치하지 않으면 401 Unauthorized 반환 후 종료
+        boolean isVerified = hash.verifyHash(password, login.get().getSecret());
+//        System.out.println("verified: "+isVerified);
+
         if(!isVerified){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(ServletUriComponentsBuilder
+                            .fromHttpUrl("http://localhost:5500/login.html?err=Unauthorized")
+                            .build().toUri())
+                    .build();
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Login l = login.get();
@@ -145,7 +159,13 @@ public class AuthController {
         //로그인 정보와 프로필 정보가 제대로 연결 안됨.
         if(!profile.isPresent()){
             //409 conflict: 데이터 현재 상태가 안 맞음.
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+//            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(ServletUriComponentsBuilder
+                            .fromHttpUrl("http://localhost:5500?err=Conflict")
+                            .build().toUri())
+                    .build();
         }
         String token = jwt.createToken(l.getId(), l.getUsername(), profile.get().getNickname());
         System.out.println(token);
@@ -153,7 +173,7 @@ public class AuthController {
         //3. cookie와 헤더를 생성한 후 리다이렉트
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
-        cookie.setMaxAge((int)(jwt.TOKEN_TIMEOUT/1000));
+        cookie.setMaxAge((int)(jwt.TOKEN_TIMEOUT/1000));// 만료시간
         cookie.setDomain("localhost");// 쿠키를 사용할 수 있는 도메인
         //응답헤더에 쿠키 추가
         res.addCookie(cookie);
@@ -162,8 +182,14 @@ public class AuthController {
 //        res.setHeader("Location", "http://localhost:5500");
 //        res.setStatus(HttpStatus.FOUND.value()); //HTTP 302 Found(리다이렉트)
 
+//        return ResponseEntity
+//                .status(302)
+//                .location(ServletUriComponentsBuilder
+//                        .fromHttpUrl("http://localhost:5500")
+//                        .build().toUri())
+//                .build();
         return ResponseEntity
-                .status(302)
+                .status(HttpStatus.FOUND)
                 .location(ServletUriComponentsBuilder
                         .fromHttpUrl("http://localhost:5500")
                         .build().toUri())
