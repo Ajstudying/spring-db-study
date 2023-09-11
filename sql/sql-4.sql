@@ -21,7 +21,9 @@
     : 예) profile(id가 1~ 10명 정도 있다.
 		login(profile_id=11)를 찾으면, 제약 조건 오류가 발생
 */
--- alter table login add constraint FKe0ght7n5cjx8tnheha9mpn8l3 foreign key (profile_id) references profile (id)
+-- alter table login 
+-- add constraint FKe0ght7n5cjx8tnheha9mpn8l3 
+-- foreign key (profile_id) references profile (id)
 
 
 INSERT INTO profile (email, nickname)

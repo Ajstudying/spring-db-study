@@ -79,6 +79,8 @@ VALUES
   select * from contact where name like 'Name1%';
   select * from contact where name like '이%';
   
+  select * from contact where name like '%name1%';
+  
   -- key range 탐색
   -- 특정 key를 기준으로 range를 탐색. offset limit는 일단 처음부터 해당까지 다 검색 후 뒤로 돌아가는 방법이기 때문에 양이 많아질수록 성능이 안 좋아짐.
   -- 그래서 성능을 높이기 위해 특정 key를 기준으로 range 검색하는 방법이 있음
@@ -88,3 +90,8 @@ VALUES
   -- OR(조건 중 1개만 성립해도 나옴), AND(모든 조건 만족), NOT
   -- select c1_0.email,c1_0.image,c1_0.name,c1_0.phone from contact c1_0 where c1_0.name like ? escape '\\' or c1_0.phone like ? escape '\\' order by c1_0.email desc limit ?,?
   
+select c1_0.email,c1_0.image,c1_0.name,c1_0.phone 
+from contact c1_0 
+where c1_0.name like ? escape '\\' 
+		or c1_0.phone like ? escape '\\' 
+order by c1_0.email desc limit ?,?
